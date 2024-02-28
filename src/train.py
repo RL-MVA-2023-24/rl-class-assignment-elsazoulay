@@ -21,6 +21,7 @@ env = TimeLimit(
 
 
 # Declare network
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 state_dim = env.observation_space.shape[0]
 n_action = env.action_space.n 
 nb_neurons=64
@@ -175,6 +176,4 @@ class ProjectAgent:
         self.model.load_state_dict(torch.load(save_path, map_location=torch.device('cpu')))
         self.target_model.load_state_dict(torch.load(save_path, map_location=torch.device('cpu')))
 
-
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
