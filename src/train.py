@@ -177,8 +177,3 @@ config = {'nb_actions': env.action_space.n,
           'update_target_tau': 0.1,
           'criterion': torch.nn.SmoothL1Loss()}
 
-# Train agent
-agent = ProjectAgent(config, DQN)
-scores = agent.train(env, 200)
-plt.plot(scores)
-agent.save('model.pth')
