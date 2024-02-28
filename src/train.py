@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import random
 import torch
 import numpy as np
@@ -8,10 +7,10 @@ import matplotlib.pyplot as plt
 from gymnasium.wrappers import TimeLimit
 from env_hiv import HIVPatient
 import gymnasium as gym
-=======
+
 from gymnasium.wrappers import TimeLimit
 from env_hiv import HIVPatient
->>>>>>> ac478862d94ef5b0d99bec93e521762427455a19
+
 
 env = TimeLimit(
     env=HIVPatient(domain_randomization=False), max_episode_steps=200
@@ -22,7 +21,6 @@ env = TimeLimit(
 # You have to implement your own agent.
 # Don't modify the methods names and signatures, but you can add methods.
 # ENJOY!
-<<<<<<< HEAD
 
 
 class ReplayBuffer:
@@ -142,11 +140,10 @@ class ProjectAgent:
 
     def save(self, path):
       torch.save(self.model.state_dict(), path)
-      pass
 
     def load(self):
-      torch.load('model.pth')
-      pass
+      self.model.load_state_dict(torch.load('model.pth'))
+      self.model.eval()
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -183,14 +180,3 @@ agent = ProjectAgent(config, DQN)
 scores = agent.train(env, 200)
 plt.plot(scores)
 agent.save('model.pth')
-=======
-class ProjectAgent:
-    def act(self, observation, use_random=False):
-        return 0
-
-    def save(self, path):
-        pass
-
-    def load(self):
-        pass
->>>>>>> ac478862d94ef5b0d99bec93e521762427455a19
