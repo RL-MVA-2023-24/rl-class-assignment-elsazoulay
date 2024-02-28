@@ -142,8 +142,10 @@ class ProjectAgent:
       torch.save(self.model.state_dict(), path)
 
     def load(self):
-      self.model.load_state_dict(torch.load('model.pth'))
-      self.model.eval()
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        save_path = os.path.join(current_dir, "model.pth")
+        self.model.load_state_dict(torch.load(save_path, map_location=torch.device('cpu')))
+        self.target_model.load_state_dict(torch.load(save_path, map_location=torch.device('cpu')))
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
