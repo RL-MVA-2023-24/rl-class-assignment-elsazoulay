@@ -3,13 +3,10 @@ import torch
 import numpy as np
 import torch.nn as nn
 from copy import deepcopy
-import matplotlib.pyplot as plt
 from gymnasium.wrappers import TimeLimit
 from env_hiv import HIVPatient
 import gymnasium as gym
 import os
-from gymnasium.wrappers import TimeLimit
-from env_hiv import HIVPatient
 
 
 env = TimeLimit(
@@ -143,7 +140,7 @@ class ProjectAgent:
 
     def load(self):
         current_dir = os.path.dirname(os.path.abspath(__file__))
-        save_path = os.path.join(current_dir, "model.pth")
+        save_path = os.path.join(current_dir, "model.pt")
         self.model.load_state_dict(torch.load(save_path, map_location=torch.device('cpu')))
         self.target_model.load_state_dict(torch.load(save_path, map_location=torch.device('cpu')))
 
@@ -157,28 +154,26 @@ nb_neurons=64
 
 DQN = torch.nn.Sequential(nn.Linear(state_dim, nb_neurons),
                           nn.ReLU(),
-                          nn.Linear(nb_neurons, nb_neurons),
-                          nn.ReLU(), 
+                          nn.Linear(nb_neurons, 128),
+                          nn.ReLU(),
+                          nn.Linear(128, 128),
+                          nn.ReLU(),
+                          nn.Linear(128, nb_neurons),
+                          nn.ReLU(),
                           nn.Linear(nb_neurons, n_action)).to(device)
 
 # DQN config
 config = {'nb_actions': env.action_space.n,
           'learning_rate': 0.001,
-          'gamma': 0.85,
-          'buffer_size': 100000000,
+          'gamma': 0.9,
+          'buffer_size': 10000000,
           'epsilon_min': 0.01,
           'epsilon_max': 1.,
           'epsilon_decay_period': 15000,
-          'epsilon_delay_decay': 30,
-          'batch_size': 256,
+          'epsilon_delay_decay': 20,
+          'batch_size': 512,
           'gradient_steps': 10,
           'update_target_strategy': 'ema', # or 'ema' 'replace'
           'update_target_freq': 200,
-          'update_target_tau': 0.1,
+          'update_target_tau': 0.005,
           'criterion': torch.nn.SmoothL1Loss()}
-
-# Train agent
-agent = ProjectAgent(config, DQN)
-scores = agent.train(env, 200)
-plt.plot(scores)
-agent.save('model.pth')
