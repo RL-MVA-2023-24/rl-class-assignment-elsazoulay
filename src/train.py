@@ -20,6 +20,37 @@ env = TimeLimit(
 # ENJOY!
 
 
+# Declare network
+state_dim = env.observation_space.shape[0]
+n_action = env.action_space.n 
+nb_neurons=64
+
+model = torch.nn.Sequential(nn.Linear(state_dim, nb_neurons),
+                          nn.ReLU(),
+                          nn.Linear(nb_neurons, 128),
+                          nn.ReLU(),
+                          nn.Linear(128, 128),
+                          nn.ReLU(),
+                          nn.Linear(128, nb_neurons),
+                          nn.ReLU(),
+                          nn.Linear(nb_neurons, n_action)).to(device)
+
+# DQN config
+config = {'nb_actions': env.action_space.n,
+          'learning_rate': 0.001,
+          'gamma': 0.9,
+          'buffer_size': 10000000,
+          'epsilon_min': 0.01,
+          'epsilon_max': 1.,
+          'epsilon_decay_period': 15000,
+          'epsilon_delay_decay': 20,
+          'batch_size': 512,
+          'gradient_steps': 10,
+          'update_target_strategy': 'ema', # or 'ema' 'replace'
+          'update_target_freq': 200,
+          'update_target_tau': 0.005,
+          'criterion': torch.nn.SmoothL1Loss()}
+
 class ReplayBuffer:
     def __init__(self, capacity, device):
         self.capacity = capacity # capacity of the buffer
@@ -40,7 +71,7 @@ class ReplayBuffer:
 
 class ProjectAgent:
 
-    def __init__(self, config, model):
+    def __init__(self):
         device = "cuda" if next(model.parameters()).is_cuda else "cpu"
         self.nb_actions = config['nb_actions']
         self.gamma = config['gamma'] if 'gamma' in config.keys() else 0.95
@@ -147,33 +178,3 @@ class ProjectAgent:
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# Declare network
-state_dim = env.observation_space.shape[0]
-n_action = env.action_space.n 
-nb_neurons=64
-
-DQN = torch.nn.Sequential(nn.Linear(state_dim, nb_neurons),
-                          nn.ReLU(),
-                          nn.Linear(nb_neurons, 128),
-                          nn.ReLU(),
-                          nn.Linear(128, 128),
-                          nn.ReLU(),
-                          nn.Linear(128, nb_neurons),
-                          nn.ReLU(),
-                          nn.Linear(nb_neurons, n_action)).to(device)
-
-# DQN config
-config = {'nb_actions': env.action_space.n,
-          'learning_rate': 0.001,
-          'gamma': 0.9,
-          'buffer_size': 10000000,
-          'epsilon_min': 0.01,
-          'epsilon_max': 1.,
-          'epsilon_decay_period': 15000,
-          'epsilon_delay_decay': 20,
-          'batch_size': 512,
-          'gradient_steps': 10,
-          'update_target_strategy': 'ema', # or 'ema' 'replace'
-          'update_target_freq': 200,
-          'update_target_tau': 0.005,
-          'criterion': torch.nn.SmoothL1Loss()}
