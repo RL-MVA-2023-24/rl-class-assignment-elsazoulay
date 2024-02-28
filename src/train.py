@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from gymnasium.wrappers import TimeLimit
 from env_hiv import HIVPatient
 import gymnasium as gym
-
+import os
 from gymnasium.wrappers import TimeLimit
 from env_hiv import HIVPatient
 
